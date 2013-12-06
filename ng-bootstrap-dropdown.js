@@ -4,7 +4,7 @@
     return {
       restrict: "AE",
       replace: true,
-      template: "<ul ng-if=\"hasChildFields(data)\" class=\"dropdown-menu\" role=\"menu\" aria-labelledby=\"dropdownMenu\"> <!-- first class dropdown -->\n    <li ng-class=\"hasChildFields(firstElement)\" ng-repeat=\"(firstKey, firstElement) in data\">\n        <a ng-click=\"func(firstKey, firstElement)\" tabindex=\"-1\"> {{ firstElement[label] | getEmptyLabel | noHTML }} </a>\n        <ul ng-if=\"hasChildFields(firstElement)\" class=\"dropdown-menu\"><!-- second class dropdown -->\n            <li ng-class=\"hasChildFields(secondElement)\" ng-click=\"func(secondKey, secondElement)\" ng-repeat=\"(secondKey, secondElement) in firstElement[children]\">\n                <a tabindex=\"-1\" href=\"\">{{ secondElement[label] | getEmptyLabel | noHTML }}</a>\n                <ul ng-if=\"hasChildFields(secondElement)\" class=\"dropdown-menu\"><!-- third class dropdown -->\n                    <li ng-class=\"hasChildFields(thirdElement)\" ng-click=\"func(thridKey, thirdElement)\" ng-repeat=\"(thirdKey, thirdElement) in secondElement[children]\">\n                        <a tabindex=\"-1\" href=\"\">{{ thirdElement[label] | getEmptyLabel | noHTML }}</a>\n                    </li>\n                </ul>\n            </li>\n        </ul>\n    </li>\n</ul>",
+      template: "<ul ng-if=\"hasChildFields(data)\" class=\"dropdown-menu\" role=\"menu\" aria-labelledby=\"dropdownMenu\"> <!-- first class dropdown -->\n    <li ng-class=\"hasChildFields(firstElement)\" ng-repeat=\"(firstKey, firstElement) in data\">\n        <a ng-click=\"func(firstKey, firstElement)\" tabindex=\"-1\"> {{ getLabelName(firstElement) | getEmptyLabel | noHTML }} </a>\n        <ul ng-if=\"hasChildFields(firstElement)\" class=\"dropdown-menu\"><!-- second class dropdown -->\n            <li ng-class=\"hasChildFields(secondElement)\" ng-click=\"func(secondKey, secondElement)\" ng-repeat=\"(secondKey, secondElement) in firstElement[children]\">\n                <a tabindex=\"-1\" href=\"\">{{ getLabelName(secondElement) | getEmptyLabel | noHTML }}</a>\n                <ul ng-if=\"hasChildFields(secondElement)\" class=\"dropdown-menu\"><!-- third class dropdown -->\n                    <li ng-class=\"hasChildFields(thirdElement)\" ng-click=\"func(thridKey, thirdElement)\" ng-repeat=\"(thirdKey, thirdElement) in secondElement[children]\">\n                        <a tabindex=\"-1\" href=\"\">{{ getLabelName(thirdElement) | getEmptyLabel | noHTML }}</a>\n                    </li>\n                </ul>\n            </li>\n        </ul>\n    </li>\n</ul>",
       scope: {
         data: '=',
         label: '=',
@@ -12,13 +12,20 @@
         func: '='
       },
       link: function(scope, iElement, iAttrs) {
-        return scope.hasChildFields = function(ele) {
+        scope.hasChildFields = function(ele) {
           var _ref;
 
           if ((angular.isArray(ele) && ele.length) || (ele != null ? (_ref = ele[scope.children]) != null ? _ref.length : void 0 : void 0) > 0) {
             return 'dropdown-submenu';
           } else {
             return false;
+          }
+        };
+        return scope.getLabelName = function(ele) {
+          if (scope.label) {
+            return ele[scope.label];
+          } else {
+            return ele;
           }
         };
       }
