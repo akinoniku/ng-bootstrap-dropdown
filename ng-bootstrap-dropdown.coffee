@@ -5,7 +5,7 @@ angular.module('bootstrap.dropdown',[])
     replace: true
     template: """
       <ul ng-if="hasChildFields(data)" class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu"> <!-- first class dropdown -->
-          <li class="dropdown-submenu" ng-repeat="(firstKey, firstElement) in data">
+          <li ng-class="hasChildFields(firstElement)" ng-repeat="(firstKey, firstElement) in data">
               <a ng-click="func(firstKey, firstElement)" tabindex="-1"> {{ firstElement[label] | getEmptyLabel | noHTML }} </a>
               <ul ng-if="hasChildFields(firstElement)" class="dropdown-menu"><!-- second class dropdown -->
                   <li ng-class="hasChildFields(secondElement)" ng-click="func(secondKey, secondElement)" ng-repeat="(secondKey, secondElement) in firstElement[children]">
@@ -26,7 +26,6 @@ angular.module('bootstrap.dropdown',[])
       children: '='
       func: '='
     link: (scope, iElement, iAttrs) ->
-      console.log scope
       scope.hasChildFields = (ele)->
         if (angular.isArray(ele) and ele.length) or ele?[scope.children]?.length > 0 then 'dropdown-submenu' else false
   )
