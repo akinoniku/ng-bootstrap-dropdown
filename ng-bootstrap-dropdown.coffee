@@ -1,36 +1,34 @@
 'use strict'
-angular.module('bootstrap.dropdown',[])
-.directive('dropdown', ->
+angular.module('bootstrap.dropdown', [])
+.directive('dropdown',  ['$compile', ($compile)->
     restrict: "AE"
     replace: true
-    template: """
-      <ul ng-if="hasChildFields(data)" class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu"> <!-- first class dropdown -->
-          <li ng-class="hasChildFields(firstElement)" ng-repeat="(firstKey, firstElement) in data">
-              <a ng-click="func(firstKey, firstElement)" tabindex="-1"> {{ getLabelName(firstElement) | getEmptyLabel | noHTML }} </a>
-              <ul ng-if="hasChildFields(firstElement)" class="dropdown-menu"><!-- second class dropdown -->
-                  <li ng-class="hasChildFields(secondElement)" ng-click="func(secondKey, secondElement)" ng-repeat="(secondKey, secondElement) in firstElement[children]">
-                      <a tabindex="-1" href="">{{ getLabelName(secondElement) | getEmptyLabel | noHTML }}</a>
-                      <ul ng-if="hasChildFields(secondElement)" class="dropdown-menu"><!-- third class dropdown -->
-                          <li ng-class="hasChildFields(thirdElement)" ng-click="func(thridKey, thirdElement)" ng-repeat="(thirdKey, thirdElement) in secondElement[children]">
-                              <a tabindex="-1" href="">{{ getLabelName(thirdElement) | getEmptyLabel | noHTML }}</a>
-                          </li>
-                      </ul>
-                  </li>
-              </ul>
-          </li>
-      </ul>
-      """
     scope:
+      att: '='
       data: '='
       label: '='
       children: '='
-      func: '='
+      click: '='
     link: (scope, iElement, iAttrs) ->
       scope.hasChildFields = (ele)->
         if (angular.isArray(ele) and ele.length) or ele?[scope.children]?.length > 0 then 'dropdown-submenu' else false
       scope.getLabelName = (ele) ->
         if scope.label then ele[scope.label] else ele
-  )
+
+      template = """
+      <ul ng-if="hasChildFields(data)" class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu"> <!-- first class dropdown -->
+          <li ng-class="hasChildFields(firstElement)" ng-repeat="(firstKey, firstElement) in data">
+              <a class='intter-link' ng-click="click(firstKey, firstElement, att)" tabindex="-1"> {{ getLabelName(firstElement) | getEmptyLabel | noHTML }} </a>
+      """
+      if scope.hasChildFields(scope.data)
+        template += """ <ul data-dropdown data-data="firstElement[children]" data-att="att" data-label="label" data-children="children" data-click="click" ></ul> """
+
+      template += "</li></ul>"
+
+      newElement = angular.element(template);
+      $compile(newElement)(scope);
+      iElement.replaceWith(newElement);
+  ])
 .filter('getEmptyLabel', [ ->
     (input)-> if input then input else  '-- Empty label --'
   ])
